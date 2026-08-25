@@ -9,17 +9,28 @@
     --danger: #ef4444;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
-    overflow: hidden;
+    overflow: hidden; /* Предотвращаем скролл всей страницы */
 }
 
 .font-mono {
     font-family: 'JetBrains Mono', monospace;
 }
 
+/* Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -48,14 +59,6 @@ body {
 }
 .animate-fade-in {
     animation: fadeIn 0.3s ease-out forwards;
-}
-
-@keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.2); }
-    50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
-}
-.glow-effect {
-    animation: pulse-glow 2s infinite;
 }
 
 .syntax-keyword { color: #c678dd; }
@@ -93,6 +96,18 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    min-height: 400px; /* Фиксированная минимальная высота */
     text-align: center;
+}
+
+/* Исправление для grid - предотвращаем сжатие карточек */
+#commands-grid {
+    align-content: start; /* Карточки прижимаются к началу */
+    min-height: 0; /* Важно для flex-контейнера */
+}
+
+/* Карточка команды - фиксируем поведение */
+.command-card {
+    min-height: 0; /* Предотвращаем растягивание */
+    overflow: hidden; /* Контролируем переполнение */
 }
