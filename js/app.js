@@ -148,7 +148,9 @@ class NetForgeApp {
     copyCommand(id) {
         const command = this.commands.find(c => c.id === id);
         if (command && command.template) {
-            navigator.clipboard.writeText(command.template).then(() => {
+            // Используем parseTemplate чтобы получить чистый текст без {}
+            const parsed = Utils.parseTemplate(command.template);
+            navigator.clipboard.writeText(parsed.plain).then(() => {
                 UI.showToast('Команда скопирована в буфер обмена', 'success');
             });
         }
