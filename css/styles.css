@@ -47,13 +47,13 @@ body {
 
 /* Горизонтальный скроллбар для кода */
 .code-scrollbar::-webkit-scrollbar {
-    height: 4px;
+    height: 3px;
 }
 .code-scrollbar::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: transparent;
 }
 .code-scrollbar::-webkit-scrollbar-thumb {
-    background: #475569;
+    background: #334155;
     border-radius: 2px;
 }
 
@@ -125,9 +125,56 @@ body {
 .command-card .card-code {
     position: relative;
     background: #020617;
-    padding: 8px 16px;
+    padding: 10px 16px;
     overflow-x: auto;
     white-space: nowrap;
+}
+
+/* Кнопка копирования справа */
+.command-card .copy-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 4px 8px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    color: #94a3b8;
+    font-size: 11px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.command-card:hover .copy-btn {
+    opacity: 1;
+}
+
+.command-card .copy-btn:hover {
+    background: #334155;
+    color: #f1f5f9;
+}
+
+/* Градиент для затемнения под кнопкой */
+.command-card .code-fade {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    background: linear-gradient(to right, transparent, #020617);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.command-card:hover .code-fade {
+    opacity: 1;
 }
 
 .command-card .card-code pre {
@@ -140,7 +187,7 @@ body {
 .command-card .card-code code {
     display: inline;
     white-space: nowrap;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.5;
 }
 

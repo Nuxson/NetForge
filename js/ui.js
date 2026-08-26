@@ -70,46 +70,59 @@ const UI = {
     },
 
     createCard(cmd) {
-        // Берём только первую строку команды для предпросмотра
-        const firstLine = cmd.template.split('\n')[0];
+        // Первая строка для предпросмотра
+        const lines = cmd.template.split('\n');
+        const firstLine = lines[0];
         const highlightedCode = Utils.highlightSyntax(firstLine);
         
-        // Показываем индикатор если строк больше одной
-        const multiLineIndicator = cmd.template.includes('\n') 
-            ? `<span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-600 bg-slate-900/80 px-1.5 py-0.5 rounded">+${cmd.template.split('\n').length - 1} строк</span>` 
+        // Индикатор многострочности
+        const multiLineBadge = lines.length > 1 
+            ? `<span class="text-[10px] text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded ml-2 whitespace-nowrap">+${lines.length - 1} строк</span>` 
             : '';
         
         return `
-            <div class="command-card bg-slate-800 border border-slate-700 rounded-lg overflow-hidden hover:border-slate-600 transition-all hover:shadow-lg hover:shadow-black/20 animate-fade-in group h-fit">
+            <div class="command-card bg-slate-800 border border-slate-700 rounded-lg overflow-hidden hover:border-slate-500 transition-all hover:shadow-lg hover:shadow-black/20 animate-fade-in group h-fit">
+                
                 <!-- Заголовок -->
-                <div class="card-header border-b border-slate-700/50 flex justify-between items-start">
-                    <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-2 mb-0.5">
-                            ${cmd.vendor ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-700 text-slate-300 shrink-0 uppercase tracking-wider">${cmd.vendor}</span>` : ''}
-                            <h3 class="font-semibold text-slate-100 text-sm leading-tight truncate" title="${cmd.title}">${cmd.title}</h3>
+                <div class="card-header border-b border-slate-700/50">
+                    <div class="flex items-center gap-2 mb-1">
+                        ${cmd.vendor ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-700 text-slate-300 shrink-0 uppercase tracking-wider">${cmd.vendor}</span>` : ''}
+                        <h3 class="font-semibold text-slate-100 text-sm leading-tight truncate flex-1" title="${cmd.title}">${cmd.title}</h3>
+                        
+                        <!-- Кнопки действий -->
+                        <div class="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                            <button data-edit="${cmd.id}" class="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-slate-700 rounded transition-colors" title="Редактировать">
+                                <i class="fa-solid fa-pen text-[10px]"></i>
+                            </button>
+                            <button data-delete="${cmd.id}" class="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors" title="Удалить">
+                                <i class="fa-solid fa-trash text-[10px]"></i>
+                            </button>
                         </div>
-                        ${cmd.description ? `<p class="text-[11px] text-slate-500 truncate">${cmd.description}</p>` : ''}
                     </div>
-                    <div class="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0 -mr-2 -mt-2">
-                        <button data-edit="${cmd.id}" class="p-1 text-slate-400 hover:text-blue-400 hover:bg-slate-700 rounded"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                        <button data-delete="${cmd.id}" class="p-1 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded"><i class="fa-solid fa-trash text-[10px]"></i></button>
-                    </div>
+                    ${cmd.description ? `<p class="text-[11px] text-slate-500 truncate leading-relaxed">${cmd.description}</p>` : ''}
                 </div>
                 
-                <!-- Код - одна строка с горизонтальным скроллом -->
-                <div class="card-code code-scrollbar group/code cursor-pointer" data-copy="${cmd.id}" title="Кликните чтобы скопировать">
-                    <button class="absolute left-2 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-slate-300 opacity-0 group-hover/code:opacity-100 transition-opacity z-10">
-                        <i class="fa-regular fa-copy text-[10px]"></i>
+                <!-- Код - одна строка с кнопкой копирования СПРАВА -->
+                <div class="card-code code-scrollbar relative cursor-pointer" data-copy="${cmd.id}" title="Кликните чтобы скопировать всю команду">
+                    
+                    <!-- Градиент затемнения справа -->
+                    <div class="code-fade"></div>
+                    
+                    <!-- Кнопка копирования СПРАВА -->
+                    <button class="copy-btn" data-copy-btn="${cmd.id}" title="Копировать">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Копировать</span>
                     </button>
-                    <pre class="pl-6"><code>${highlightedCode}</code></pre>
-                    ${multiLineIndicator}
+                    
+                    <!-- Сам код -->
+                    <code class="font-mono text-[13px] text-slate-300">${highlightedCode}</code>
+                    ${multiLineBadge}
                 </div>
 
                 <!-- Теги -->
                 ${cmd.tags && cmd.tags.length > 0 ? `
-                <div class="card-footer border-t border-slate-700/50 flex gap-1.5 overflow-x-auto no-scrollbar">
-                    ${cmd.tags.slice(0, 3).map(t => `<span class="text-[10px] text-slate-500 bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-800 whitespace-nowrap">#${t}</span>`).join('')}
-                    ${cmd.tags.length > 3 ? `<span class="text-[10px] text-slate-600 px-1 py-0.5">+${cmd.tags.length - 3}</span>` : ''}
+                <div class="card-footer border-t border-slate-700/30 flex gap-2 overflow-x-auto no-scrollbar">
+                    ${cmd.tags.map(t => `<span class="text-[10px] text-slate-500 hover:text-slate-400 cursor-pointer transition-colors whitespace-nowrap">#${t}</span>`).join('')}
                 </div>
                 ` : ''}
             </div>
@@ -117,7 +130,15 @@ const UI = {
     },
 
     bindCardEvents(handlers) {
-        // Клик по коду для копирования
+        // Клик по кнопке копирования
+        this.elements.grid.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handlers.onCopy(btn.dataset.copyBtn);
+            });
+        });
+        
+        // Клик по области кода
         this.elements.grid.querySelectorAll('.card-code[data-copy]').forEach(el => {
             el.addEventListener('click', () => handlers.onCopy(el.dataset.copy));
         });
