@@ -87,7 +87,6 @@ const UI = {
                         ${cmd.vendor ? `<span class="text-xs font-bold px-2 py-1 rounded bg-slate-700 text-slate-300 shrink-0 uppercase tracking-wider">${cmd.vendor}</span>` : ''}
                         <h3 class="font-semibold text-slate-100 leading-tight truncate flex-1" title="${cmd.title}">${cmd.title}</h3>
                         
-                        <!-- Кнопки действий -->
                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                             <button data-edit="${cmd.id}" class="p-2 text-slate-400 hover:text-blue-400 hover:bg-slate-700 rounded transition-colors" title="Редактировать">
                                 <i class="fa-solid fa-pen text-xs"></i>
@@ -101,18 +100,15 @@ const UI = {
                 </div>
                 
                 <!-- Код - одна строка с кнопкой копирования СПРАВА -->
-                <div class="card-code code-scrollbar relative" data-copy="${cmd.id}" title="Кликните чтобы скопировать всю команду">
+                <div class="card-code" data-copy="${cmd.id}" title="Кликните чтобы скопировать всю команду">
                     
-                    <!-- Градиент затемнения справа -->
                     <div class="code-fade"></div>
                     
-                    <!-- Кнопка копирования СПРАВА -->
                     <button type="button" class="copy-btn" data-copy-btn="${cmd.id}" title="Копировать">
                         <i class="fa-regular fa-copy"></i>
                         <span>Копировать</span>
                     </button>
                     
-                    <!-- Сам код -->
                     <code class="font-mono text-slate-300">${highlightedCode}</code>
                     ${multiLineBadge}
                 </div>
@@ -128,7 +124,6 @@ const UI = {
     },
 
     bindCardEvents(handlers) {
-        // Клик по кнопке копирования
         this.elements.grid.querySelectorAll('.copy-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -137,7 +132,6 @@ const UI = {
             });
         });
         
-        // Клик по области кода
         this.elements.grid.querySelectorAll('.card-code[data-copy]').forEach(el => {
             el.addEventListener('click', (e) => {
                 if (e.target.closest('.copy-btn')) return;
