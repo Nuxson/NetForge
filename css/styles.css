@@ -23,14 +23,13 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
-    overflow: hidden; /* Предотвращаем скролл всей страницы */
+    overflow: hidden;
 }
 
 .font-mono {
     font-family: 'JetBrains Mono', monospace;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -96,18 +95,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 400px; /* Фиксированная минимальная высота */
+    min-height: 400px;
     text-align: center;
-}
-
-/* Исправление для grid - предотвращаем сжатие карточек */
-#commands-grid {
-    align-content: start; /* Карточки прижимаются к началу */
-    min-height: 0; /* Важно для flex-контейнера */
-}
-
-/* Карточка команды - фиксируем поведение */
-.command-card {
-    min-height: 0; /* Предотвращаем растягивание */
-    overflow: hidden; /* Контролируем переполнение */
+    grid-column: 1 / -1;
 }

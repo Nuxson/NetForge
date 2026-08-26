@@ -33,10 +33,10 @@
     </header>
 
     <!-- Main Layout -->
-    <div class="flex flex-1 min-h-0"> <!-- min-h-0 критически важно для flex! -->
+    <div class="flex flex-1 min-h-0">
         
         <!-- Sidebar -->
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col hidden md:flex overflow-y-auto">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col hidden md:flex overflow-y-auto shrink-0">
             <div class="p-4 shrink-0">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Вендоры</h3>
                 <div id="vendor-filters" class="space-y-1"></div>
@@ -86,7 +86,7 @@
         </aside>
 
         <!-- Content Area -->
-        <main class="flex-1 flex flex-col min-h-0 bg-slate-900/50"> <!-- min-h-0 критически важно! -->
+        <main class="flex-1 flex flex-col min-h-0 bg-slate-900/50">
             <!-- Toolbar -->
             <div class="h-12 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-900/80 backdrop-blur shrink-0">
                 <div class="flex items-center gap-2 text-sm text-slate-400">
@@ -103,9 +103,8 @@
                 </div>
             </div>
 
-            <!-- Grid - здесь должен быть скролл -->
-            <div id="commands-grid" class="flex-1 overflow-y-auto p-6 min-h-0"> <!-- min-h-0 и overflow-y-auto! -->
-                <!-- Карточки будут в grid layout внутри -->
+            <!-- Grid - напрямую grid с overflow -->
+            <div id="commands-grid" class="flex-1 overflow-y-auto p-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 content-start auto-rows-min">
             </div>
         </main>
     </div>
