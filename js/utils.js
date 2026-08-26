@@ -9,79 +9,223 @@ const Utils = {
         return div.innerHTML;
     },
 
-    // Парсинг шаблона с {} подсветкой
-    parseTemplate(template) {
-        if (!template) return { html: '', plain: '' };
+    // Ключевые слова для специальной подсветки
+    KEYWORDS: {
+        // Команды show/display
+        show: 'syntax-cmd-show',
+        display: 'syntax-cmd-show',
+        sh: 'syntax-cmd-show',
+        di: 'syntax-cmd-show',
         
-        // Разбиваем на части: обычный текст и {выделенный текст}
-        const parts = [];
-        let current = '';
-        let inBraces = false;
-        let braceContent = '';
+        // Конфигурация
+        configure: 'syntax-cmd-config',
+        conf: 'syntax-cmd-config',
+        config: 'syntax-cmd-config',
+        configuration: 'syntax-cmd-config',
         
-        for (let i = 0; i < template.length; i++) {
-            const char = template[i];
+        // Интерфейсы
+        interface: 'syntax-keyword-iface',
+        interfaces: 'syntax-keyword-iface',
+        iface: 'syntax-keyword-iface',
+        if: 'syntax-keyword-iface',
+        
+        // IP/сеть
+        ip: 'syntax-keyword-ip',
+        ipv4: 'syntax-keyword-ip',
+        ipv6: 'syntax-keyword-ip',
+        icmp: 'syntax-keyword-ip',
+        
+        // VLAN
+        vlan: 'syntax-keyword-vlan',
+        vlans: 'syntax-keyword-vlan',
+        
+        // Маршрутизация
+        route: 'syntax-keyword-route',
+        routing: 'syntax-keyword-route',
+        router: 'syntax-keyword-route',
+        bgp: 'syntax-keyword-route',
+        ospf: 'syntax-keyword-route',
+        eigrp: 'syntax-keyword-route',
+        isis: 'syntax-keyword-route',
+        rip: 'syntax-keyword-route',
+        mpls: 'syntax-keyword-route',
+        
+        // ACL/безопасность
+        access: 'syntax-keyword-acl',
+        acl: 'syntax-keyword-acl',
+        list: 'syntax-keyword-acl',
+        permit: 'syntax-keyword-acl',
+        deny: 'syntax-keyword-acl',
+        
+        // NAT
+        nat: 'syntax-keyword-nat',
+        inside: 'syntax-keyword-nat',
+        outside: 'syntax-keyword-nat',
+        
+        // DHCP
+        dhcp: 'syntax-keyword-dhcp',
+        
+        // DNS
+        dns: 'syntax-keyword-dns',
+        
+        // NTP
+        ntp: 'syntax-keyword-ntp',
+        
+        // SNMP
+        snmp: 'syntax-keyword-snmp',
+        
+        // SSH/Telnet
+        ssh: 'syntax-keyword-ssh',
+        telnet: 'syntax-keyword-ssh',
+        scp: 'syntax-keyword-ssh',
+        sftp: 'syntax-keyword-ssh',
+        
+        // Пользователи
+        username: 'syntax-keyword-user',
+        user: 'syntax-keyword-user',
+        password: 'syntax-keyword-user',
+        secret: 'syntax-keyword-user',
+        enable: 'syntax-keyword-user',
+        
+        // Система
+        system: 'syntax-keyword-system',
+        reload: 'syntax-keyword-system',
+        reboot: 'syntax-keyword-system',
+        shutdown: 'syntax-keyword-system',
+        restart: 'syntax-keyword-system',
+        
+        // Файлы
+        copy: 'syntax-keyword-file',
+        delete: 'syntax-keyword-file',
+        erase: 'syntax-keyword-file',
+        format: 'syntax-keyword-file',
+        mkdir: 'syntax-keyword-file',
+        dir: 'syntax-keyword-file',
+        
+        // Отладка
+        debug: 'syntax-keyword-debug',
+        undebug: 'syntax-keyword-debug',
+        terminal: 'syntax-keyword-debug',
+        monitor: 'syntax-keyword-debug',
+        logging: 'syntax-keyword-debug',
+        
+        // Пинг/трассировка
+        ping: 'syntax-keyword-ping',
+        traceroute: 'syntax-keyword-ping',
+        trace: 'syntax-keyword-ping',
+        tracert: 'syntax-keyword-ping',
+        
+        // no
+        no: 'syntax-keyword-no',
+        
+        // default
+        default: 'syntax-keyword-default',
+        
+        // Режимы
+        global: 'syntax-keyword-mode',
+        privileged: 'syntax-keyword-mode',
+        exec: 'syntax-keyword-mode',
+        
+        // Linux специфичные
+        sudo: 'syntax-cmd-linux',
+        apt: 'syntax-cmd-linux',
+        yum: 'syntax-cmd-linux',
+        dnf: 'syntax-cmd-linux',
+        systemctl: 'syntax-cmd-linux',
+        journalctl: 'syntax-cmd-linux',
+        service: 'syntax-cmd-linux',
+        grep: 'syntax-cmd-linux',
+        awk: 'syntax-cmd-linux',
+        sed: 'syntax-cmd-linux',
+        cat: 'syntax-cmd-linux',
+        ls: 'syntax-cmd-linux',
+        cd: 'syntax-cmd-linux',
+        pwd: 'syntax-cmd-linux',
+        ps: 'syntax-cmd-linux',
+        top: 'syntax-cmd-linux',
+        netstat: 'syntax-cmd-linux',
+        ss: 'syntax-cmd-linux',
+        iproute2: 'syntax-cmd-linux',
+        iptables: 'syntax-cmd-linux',
+        nft: 'syntax-cmd-linux',
+        tcpdump: 'syntax-cmd-linux',
+        curl: 'syntax-cmd-linux',
+        wget: 'syntax-cmd-linux',
+        tar: 'syntax-cmd-linux',
+        gzip: 'syntax-cmd-linux',
+        chmod: 'syntax-cmd-linux',
+        chown: 'syntax-cmd-linux',
+        df: 'syntax-cmd-linux',
+        du: 'syntax-cmd-linux',
+        free: 'syntax-cmd-linux',
+        uptime: 'syntax-cmd-linux',
+        whoami: 'syntax-cmd-linux',
+        uname: 'syntax-cmd-linux',
+        hostname: 'syntax-cmd-linux',
+        ifconfig: 'syntax-cmd-linux',
+        iwconfig: 'syntax-cmd-linux',
+        iw: 'syntax-cmd-linux',
+        nmcli: 'syntax-cmd-linux',
+        nmtui: 'syntax-cmd-linux',
+        bridge: 'syntax-cmd-linux',
+        ovs: 'syntax-cmd-linux',
+        docker: 'syntax-cmd-linux',
+        kubectl: 'syntax-cmd-linux',
+        helm: 'syntax-cmd-linux',
+    },
+
+    // Позиционная подсветка: каждое слово по порядку своим цветом
+    highlightSyntax(text) {
+        if (!text) return '';
+        
+        const escaped = Utils.escapeHtml(text);
+        
+        // Разбиваем на слова и пробелы/спецсимволы
+        const tokens = escaped.split(/(\s+|[|;,=&])/);
+        
+        // Цвета для позиций слов (циклически)
+        const wordColors = [
+            'syntax-pos-1',  // первое слово
+            'syntax-pos-2',  // второе слово
+            'syntax-pos-3',  // третье
+            'syntax-pos-4',  // четвёртое
+            'syntax-pos-5',  // пятое
+            'syntax-pos-6',  // шестое
+        ];
+        
+        let wordIndex = 0;
+        let result = '';
+        
+        tokens.forEach(token => {
+            if (!token) return;
             
-            if (char === '{' && !inBraces && template[i + 1] !== '{') {
-                // Начало выделения
-                if (current) {
-                    parts.push({ type: 'normal', text: current });
-                    current = '';
+            // Пробелы - как есть
+            if (/^\s+$/.test(token)) {
+                result += token;
+            } 
+            // Спецсимволы
+            else if (/^[|;,=&]$/.test(token)) {
+                result += `<span class="syntax-sep">${token}</span>`;
+            } 
+            // Слова - проверяем ключевые слова, иначе позиционная подсветка
+            else {
+                const lowerToken = token.toLowerCase();
+                const keywordClass = Utils.KEYWORDS[lowerToken];
+                
+                if (keywordClass) {
+                    // Ключевое слово - специальный цвет
+                    result += `<span class="${keywordClass}">${token}</span>`;
+                } else {
+                    // Обычное слово - позиционная подсветка
+                    const colorClass = wordColors[wordIndex % wordColors.length];
+                    result += `<span class="${colorClass}">${token}</span>`;
                 }
-                inBraces = true;
-                braceContent = '';
-            } else if (char === '}' && inBraces) {
-                // Конец выделения
-                parts.push({ type: 'highlight', text: braceContent });
-                inBraces = false;
-                current = '';
-            } else if (inBraces) {
-                braceContent += char;
-            } else {
-                current += char;
-            }
-        }
-        
-        // Остаток
-        if (current) {
-            parts.push({ type: 'normal', text: current });
-        }
-        // Незакрытая скобка
-        if (inBraces && braceContent) {
-            parts.push({ type: 'normal', text: '{' + braceContent });
-        }
-        
-        // Генерируем HTML для отображения
-        let html = '';
-        let plain = '';
-        
-        parts.forEach(part => {
-            if (part.type === 'highlight') {
-                html += `<span class="syntax-highlight">${Utils.escapeHtml(part.text)}</span>`;
-                plain += part.text;
-            } else {
-                const escaped = Utils.escapeHtml(part.text);
-                // Дополнительная подсветка для обычного текста
-                const highlighted = Utils.highlightBasicSyntax(escaped);
-                html += highlighted;
-                plain += part.text;
+                
+                wordIndex++;
             }
         });
         
-        return { html, plain };
-    },
-
-    // Базовая подсветка синтаксиса (без {})
-    highlightBasicSyntax(text) {
-        return text
-            .replace(/\b(show|display|ping|traceroute|interface|ip|no|shutdown|system|backup|configure|set|get|add|remove|delete|enable|disable|run|start|stop|restart|status|list|info|help|version|config|save|load|import|export|clear|reset|default|mode|type|name|id|port|vlan|route|bgp|ospf|mpls|vpn|acl|nat|dhcp|dns|ntp|snmp|ssh|telnet|http|https|ftp|tftp|sftp|scp|rsync|curl|wget|tar|gzip|zip|unzip|cat|grep|awk|sed|cut|sort|uniq|head|tail|less|more|find|locate|which|whereis|chmod|chown|chgrp|ln|mkdir|rmdir|rm|cp|mv|touch|echo|printf|read|source|export|alias|unalias|history|jobs|fg|bg|kill|ps|top|htop|vmstat|iostat|netstat|ss|lsof|df|du|free|uptime|who|w|last|dmesg|journalctl|systemctl|service|crontab|at|batch|mkfs|fsck|mount|umount|fdisk|parted|lvcreate|vgcreate|pvcreate|mdadm|cryptsetup|iptables|nftables|firewalld|ufw|fail2ban|tcpdump|wireshark|tshark|nmap|masscan|nikto|sqlmap|metasploit|aircrack|john|hashcat|hydra|medusa|nc|ncat|socat|openssl|gpg|ssh-keygen|ssh-copy-id|scp|rsync|ansible|puppet|chef|salt|terraform|vagrant|docker|podman|kubectl|helm|minikube|kind|k3s|k9s|stern|istioctl|linkerd|consul|vault|nomad|packer|boundary|waypoint|nomad|consul-template|envoy|nginx|apache|httpd|lighttpd|caddy|haproxy|traefik|varnish|squid|memcached|redis|mongodb|mysql|mariadb|postgresql|sqlite|elasticsearch|kibana|logstash|beats|grafana|prometheus|alertmanager|thanos|cortex|loki|tempo|jaeger|zipkin|otel|fluentd|fluent-bit|vector|filebeat|metricbeat|packetbeat|heartbeat|auditbeat|osquery|falco|sysdig|tracee|trivy|snyk|clair|anchore|grype)\b/gi, '<span class="syntax-cmd">$1</span>')
-            .replace(/\b(router|switch|firewall|ap|controller|gateway|server|client|peer|neighbor|host|node|cluster|pod|container|image|volume|network|subnet|mask|gateway|dns|domain|hostname|fqdn|url|uri|path|file|dir|folder|link|socket|pipe|fifo|device|block|char|major|minor|inode|uid|gid|pid|ppid|tid|sid|pgid|nice|priority|sched|affinity|cpuset|cgroup|namespace|ipc|uts|net|pid|user|mnt|time|seccomp|apparmor|selinux|smack|tomoyo|ima|evm|tpm|uefi|bios|grub|lilo|initrd|vmlinuz|bzImage|zImage|uImage|fit|dtb|dts|dtsi|yaml|yml|json|xml|toml|ini|cfg|conf|config|properties|env|dotenv|shell|bash|zsh|fish|sh|csh|tcsh|ksh|dash|ash|hush|busybox)\b/gi, '<span class="syntax-keyword">$1</span>')
-            .replace(/(\|.*)/g, '<span class="syntax-comment">$1</span>');
-    },
-
-    // Устаревший метод для совместимости
-    highlightSyntax(template) {
-        return Utils.parseTemplate(template).html;
+        return result;
     },
 
     parseTags(tagsString) {

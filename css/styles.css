@@ -60,19 +60,157 @@ body {
     animation: fadeIn 0.3s ease-out forwards;
 }
 
-/* Стили подсветки синтаксиса */
-.syntax-keyword { color: #c678dd; }
-.syntax-cmd { color: #61afef; }
-.syntax-arg { color: #e5c07b; }
-.syntax-comment { color: #5c6370; font-style: italic; }
+/* ============================================
+   ПОЗИЦИОННАЯ ПОДСВЕТКА (для обычных слов)
+   ============================================ */
+.syntax-pos-1 { color: #61afef; }      /* синий */
+.syntax-pos-2 { color: #98c379; }      /* зелёный */
+.syntax-pos-3 { color: #e5c07b; }      /* жёлтый */
+.syntax-pos-4 { color: #c678dd; }      /* фиолетовый */
+.syntax-pos-5 { color: #d19a66; }      /* оранжевый */
+.syntax-pos-6 { color: #e06c75; }      /* розовый */
 
-/* Кастомная подсветка через {} */
-.syntax-highlight {
+/* ============================================
+   КЛЮЧЕВЫЕ СЛОВА (специальные цвета)
+   ============================================ */
+
+/* Show/Display команды */
+.syntax-cmd-show {
+    color: #61afef;
+    font-weight: 600;
+}
+
+/* Configure */
+.syntax-cmd-config {
     color: #e5c07b;
-    background: rgba(229, 192, 123, 0.15);
-    padding: 1px 4px;
-    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* Linux команды */
+.syntax-cmd-linux {
+    color: #98c379;
     font-weight: 500;
+}
+
+/* Интерфейсы */
+.syntax-keyword-iface {
+    color: #c678dd;
+    font-weight: 500;
+}
+
+/* IP/сеть */
+.syntax-keyword-ip {
+    color: #56b6c2;
+    font-weight: 500;
+}
+
+/* VLAN */
+.syntax-keyword-vlan {
+    color: #d19a66;
+    font-weight: 500;
+}
+
+/* Маршрутизация */
+.syntax-keyword-route {
+    color: #e06c75;
+    font-weight: 500;
+}
+
+/* ACL/безопасность */
+.syntax-keyword-acl {
+    color: #ff6b6b;
+    font-weight: 500;
+}
+
+/* NAT */
+.syntax-keyword-nat {
+    color: #4ecdc4;
+    font-weight: 500;
+}
+
+/* DHCP */
+.syntax-keyword-dhcp {
+    color: #45b7d1;
+    font-weight: 500;
+}
+
+/* DNS */
+.syntax-keyword-dns {
+    color: #96ceb4;
+    font-weight: 500;
+}
+
+/* NTP */
+.syntax-keyword-ntp {
+    color: #ffeaa7;
+    font-weight: 500;
+}
+
+/* SNMP */
+.syntax-keyword-snmp {
+    color: #dfe6e9;
+    font-weight: 500;
+}
+
+/* SSH/Telnet */
+.syntax-keyword-ssh {
+    color: #74b9ff;
+    font-weight: 500;
+}
+
+/* Пользователи */
+.syntax-keyword-user {
+    color: #fd79a8;
+    font-weight: 500;
+}
+
+/* Система */
+.syntax-keyword-system {
+    color: #fab1a0;
+    font-weight: 500;
+}
+
+/* Файлы */
+.syntax-keyword-file {
+    color: #a29bfe;
+    font-weight: 500;
+}
+
+/* Отладка */
+.syntax-keyword-debug {
+    color: #fdcb6e;
+    font-weight: 500;
+}
+
+/* Пинг/трассировка */
+.syntax-keyword-ping {
+    color: #55efc4;
+    font-weight: 500;
+}
+
+/* No */
+.syntax-keyword-no {
+    color: #ff7675;
+    font-weight: 600;
+    font-style: italic;
+}
+
+/* Default */
+.syntax-keyword-default {
+    color: #81ecec;
+    font-weight: 500;
+}
+
+/* Режимы */
+.syntax-keyword-mode {
+    color: #dfe6e9;
+    font-weight: 500;
+}
+
+/* Разделители */
+.syntax-sep {
+    color: #5c6370;
+    opacity: 0.7;
 }
 
 #toast-container {
@@ -200,17 +338,4 @@ body {
 
 .command-card .card-footer .tag {
     font-size: 12px;
-}
-
-/* Подсказка в модальном окне */
-.template-hint {
-    font-size: 11px;
-    color: #64748b;
-}
-
-.template-hint .example {
-    color: #e5c07b;
-    background: rgba(229, 192, 123, 0.1);
-    padding: 1px 4px;
-    border-radius: 3px;
 }
