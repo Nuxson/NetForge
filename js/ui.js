@@ -14,7 +14,6 @@ const UI = {
             resultCount: document.getElementById('result-count'),
             dbCount: document.getElementById('db-count'),
             toastContainer: document.getElementById('toast-container'),
-            // AutoBackup elements
             backupStatusIndicator: document.getElementById('backup-status-indicator'),
             backupStatusText: document.getElementById('backup-status-text'),
             backupLastDate: document.getElementById('backup-last-date')
@@ -53,7 +52,7 @@ const UI = {
 
         if (commands.length === 0) {
             this.elements.grid.innerHTML = `
-                <div class="col-span-full empty-state text-slate-500">
+                <div class="empty-state text-slate-500">
                     <i class="fa-solid fa-box-open text-5xl mb-4 opacity-30"></i>
                     <p class="text-lg mb-2">База команд пуста</p>
                     <p class="text-sm mb-4">Добавьте свою первую команду или импортируйте данные</p>
@@ -66,6 +65,7 @@ const UI = {
             return;
         }
 
+        // Прямой вывод карточек в grid контейнер
         this.elements.grid.innerHTML = commands.map(cmd => this.createCard(cmd)).join('');
         this.bindCardEvents(handlers);
     },
@@ -74,7 +74,7 @@ const UI = {
         const highlightedCode = Utils.highlightSyntax(cmd.template);
         
         return `
-            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden hover:border-slate-600 transition-all hover:shadow-xl hover:shadow-black/20 flex flex-col animate-fade-in group">
+            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden hover:border-slate-600 transition-all hover:shadow-xl hover:shadow-black/20 flex flex-col animate-fade-in group h-fit">
                 <div class="p-4 border-b border-slate-700 flex justify-between items-start bg-slate-800/50">
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2 mb-1">
@@ -89,7 +89,7 @@ const UI = {
                     </div>
                 </div>
                 
-                <div class="relative bg-slate-950 p-4 font-mono text-sm overflow-x-auto flex-1 group/code">
+                <div class="relative bg-slate-950 p-4 font-mono text-sm overflow-x-auto group/code">
                     <button data-copy="${cmd.id}" class="absolute top-2 right-2 p-2 bg-slate-800 text-slate-400 rounded opacity-0 group-hover/code:opacity-100 hover:text-white hover:bg-slate-700 transition-all z-10" title="Копировать">
                         <i class="fa-regular fa-copy"></i>
                     </button>
