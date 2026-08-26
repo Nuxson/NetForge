@@ -65,40 +65,51 @@ const UI = {
             return;
         }
 
-        // Прямой вывод карточек в grid контейнер
         this.elements.grid.innerHTML = commands.map(cmd => this.createCard(cmd)).join('');
         this.bindCardEvents(handlers);
     },
 
     createCard(cmd) {
-        const highlightedCode = Utils.highlightSyntax(cmd.template);
+        // Берём только первую строку команды для предпросмотра
+        const firstLine = cmd.template.split('\n')[0];
+        const highlightedCode = Utils.highlightSyntax(firstLine);
+        
+        // Показываем индикатор если строк больше одной
+        const multiLineIndicator = cmd.template.includes('\n') 
+            ? `<span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-600 bg-slate-900/80 px-1.5 py-0.5 rounded">+${cmd.template.split('\n').length - 1} строк</span>` 
+            : '';
         
         return `
-            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden hover:border-slate-600 transition-all hover:shadow-xl hover:shadow-black/20 flex flex-col animate-fade-in group h-fit">
-                <div class="p-4 border-b border-slate-700 flex justify-between items-start bg-slate-800/50">
+            <div class="command-card bg-slate-800 border border-slate-700 rounded-lg overflow-hidden hover:border-slate-600 transition-all hover:shadow-lg hover:shadow-black/20 animate-fade-in group h-fit">
+                <!-- Заголовок -->
+                <div class="card-header border-b border-slate-700/50 flex justify-between items-start">
                     <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-2 mb-1">
-                            ${cmd.vendor ? `<span class="text-xs font-bold px-2 py-0.5 rounded bg-slate-700 text-slate-300 shrink-0">${cmd.vendor}</span>` : ''}
-                            <h3 class="font-semibold text-slate-100 leading-tight truncate" title="${cmd.title}">${cmd.title}</h3>
+                        <div class="flex items-center gap-2 mb-0.5">
+                            ${cmd.vendor ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-700 text-slate-300 shrink-0 uppercase tracking-wider">${cmd.vendor}</span>` : ''}
+                            <h3 class="font-semibold text-slate-100 text-sm leading-tight truncate" title="${cmd.title}">${cmd.title}</h3>
                         </div>
-                        <p class="text-xs text-slate-500 line-clamp-1">${cmd.description || ''}</p>
+                        ${cmd.description ? `<p class="text-[11px] text-slate-500 truncate">${cmd.description}</p>` : ''}
                     </div>
-                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0">
-                        <button data-edit="${cmd.id}" class="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-slate-700 rounded"><i class="fa-solid fa-pen"></i></button>
-                        <button data-delete="${cmd.id}" class="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0 -mr-2 -mt-2">
+                        <button data-edit="${cmd.id}" class="p-1 text-slate-400 hover:text-blue-400 hover:bg-slate-700 rounded"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                        <button data-delete="${cmd.id}" class="p-1 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded"><i class="fa-solid fa-trash text-[10px]"></i></button>
                     </div>
                 </div>
                 
-                <div class="relative bg-slate-950 p-4 font-mono text-sm overflow-x-auto group/code">
-                    <button data-copy="${cmd.id}" class="absolute top-2 right-2 p-2 bg-slate-800 text-slate-400 rounded opacity-0 group-hover/code:opacity-100 hover:text-white hover:bg-slate-700 transition-all z-10" title="Копировать">
-                        <i class="fa-regular fa-copy"></i>
+                <!-- Код - одна строка с горизонтальным скроллом -->
+                <div class="card-code code-scrollbar group/code cursor-pointer" data-copy="${cmd.id}" title="Кликните чтобы скопировать">
+                    <button class="absolute left-2 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-slate-300 opacity-0 group-hover/code:opacity-100 transition-opacity z-10">
+                        <i class="fa-regular fa-copy text-[10px]"></i>
                     </button>
-                    <pre class="text-slate-300 whitespace-pre-wrap break-all"><code>${highlightedCode}</code></pre>
+                    <pre class="pl-6"><code>${highlightedCode}</code></pre>
+                    ${multiLineIndicator}
                 </div>
 
+                <!-- Теги -->
                 ${cmd.tags && cmd.tags.length > 0 ? `
-                <div class="px-4 py-2 bg-slate-800/80 border-t border-slate-700 flex gap-2 overflow-x-auto no-scrollbar">
-                    ${cmd.tags.map(t => `<span class="text-[10px] uppercase tracking-wider text-slate-500 bg-slate-900 px-2 py-1 rounded border border-slate-800">#${t}</span>`).join('')}
+                <div class="card-footer border-t border-slate-700/50 flex gap-1.5 overflow-x-auto no-scrollbar">
+                    ${cmd.tags.slice(0, 3).map(t => `<span class="text-[10px] text-slate-500 bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-800 whitespace-nowrap">#${t}</span>`).join('')}
+                    ${cmd.tags.length > 3 ? `<span class="text-[10px] text-slate-600 px-1 py-0.5">+${cmd.tags.length - 3}</span>` : ''}
                 </div>
                 ` : ''}
             </div>
@@ -106,14 +117,22 @@ const UI = {
     },
 
     bindCardEvents(handlers) {
+        // Клик по коду для копирования
+        this.elements.grid.querySelectorAll('.card-code[data-copy]').forEach(el => {
+            el.addEventListener('click', () => handlers.onCopy(el.dataset.copy));
+        });
+        
         this.elements.grid.querySelectorAll('button[data-edit]').forEach(btn => {
-            btn.addEventListener('click', () => handlers.onEdit(btn.dataset.edit));
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handlers.onEdit(btn.dataset.edit);
+            });
         });
         this.elements.grid.querySelectorAll('button[data-delete]').forEach(btn => {
-            btn.addEventListener('click', () => handlers.onDelete(btn.dataset.delete));
-        });
-        this.elements.grid.querySelectorAll('button[data-copy]').forEach(btn => {
-            btn.addEventListener('click', () => handlers.onCopy(btn.dataset.copy));
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handlers.onDelete(btn.dataset.delete);
+            });
         });
     },
 

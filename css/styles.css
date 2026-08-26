@@ -45,6 +45,18 @@ body {
     background: #475569;
 }
 
+/* Горизонтальный скроллбар для кода */
+.code-scrollbar::-webkit-scrollbar {
+    height: 4px;
+}
+.code-scrollbar::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+.code-scrollbar::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 2px;
+}
+
 .glass {
     background: rgba(30, 41, 59, 0.7);
     backdrop-filter: blur(10px);
@@ -98,4 +110,40 @@ body {
     min-height: 400px;
     text-align: center;
     grid-column: 1 / -1;
+}
+
+/* Компактная карточка */
+.command-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.command-card .card-header {
+    padding: 12px 16px;
+}
+
+.command-card .card-code {
+    position: relative;
+    background: #020617;
+    padding: 8px 16px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.command-card .card-code pre {
+    margin: 0;
+    padding: 0;
+    display: inline;
+    white-space: nowrap;
+}
+
+.command-card .card-code code {
+    display: inline;
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.command-card .card-footer {
+    padding: 8px 16px;
 }
