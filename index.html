@@ -8,6 +8,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="description" content="Локальная база знаний CLI-команд для сетевых инженеров">
+    <meta name="theme-color" content="#2563eb">
+
+
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
 
@@ -175,5 +180,16 @@
     <script src="js/modal.js"></script>
     <script src="js/autobackup.js"></script>
     <script src="js/app.js"></script>
+
+    <!-- Регистрация Service Worker для PWA -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then((reg) => console.log('[NetForge] SW зарегистрирован:', reg.scope))
+                .catch((err) => console.error('[NetForge] Ошибка регистрации SW:', err));
+        });
+    }
+    </script>
 </body>
 </html>
