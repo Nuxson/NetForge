@@ -70,14 +70,12 @@ const UI = {
     },
 
     createCard(cmd) {
-        // Первая строка для предпросмотра
         const lines = cmd.template.split('\n');
         const firstLine = lines[0];
         const highlightedCode = Utils.highlightSyntax(firstLine);
         
-        // Индикатор многострочности
         const multiLineBadge = lines.length > 1 
-            ? `<span class="text-[10px] text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded ml-2 whitespace-nowrap">+${lines.length - 1} строк</span>` 
+            ? `<span class="text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded ml-2 whitespace-nowrap">+${lines.length - 1} строк</span>` 
             : '';
         
         return `
@@ -86,43 +84,43 @@ const UI = {
                 <!-- Заголовок -->
                 <div class="card-header border-b border-slate-700/50">
                     <div class="flex items-center gap-2 mb-1">
-                        ${cmd.vendor ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-700 text-slate-300 shrink-0 uppercase tracking-wider">${cmd.vendor}</span>` : ''}
-                        <h3 class="font-semibold text-slate-100 text-sm leading-tight truncate flex-1" title="${cmd.title}">${cmd.title}</h3>
+                        ${cmd.vendor ? `<span class="text-xs font-bold px-2 py-1 rounded bg-slate-700 text-slate-300 shrink-0 uppercase tracking-wider">${cmd.vendor}</span>` : ''}
+                        <h3 class="font-semibold text-slate-100 leading-tight truncate flex-1" title="${cmd.title}">${cmd.title}</h3>
                         
                         <!-- Кнопки действий -->
-                        <div class="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                            <button data-edit="${cmd.id}" class="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-slate-700 rounded transition-colors" title="Редактировать">
-                                <i class="fa-solid fa-pen text-[10px]"></i>
+                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                            <button data-edit="${cmd.id}" class="p-2 text-slate-400 hover:text-blue-400 hover:bg-slate-700 rounded transition-colors" title="Редактировать">
+                                <i class="fa-solid fa-pen text-xs"></i>
                             </button>
-                            <button data-delete="${cmd.id}" class="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors" title="Удалить">
-                                <i class="fa-solid fa-trash text-[10px]"></i>
+                            <button data-delete="${cmd.id}" class="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors" title="Удалить">
+                                <i class="fa-solid fa-trash text-xs"></i>
                             </button>
                         </div>
                     </div>
-                    ${cmd.description ? `<p class="text-[11px] text-slate-500 truncate leading-relaxed">${cmd.description}</p>` : ''}
+                    ${cmd.description ? `<p class="description text-slate-500 truncate leading-relaxed">${cmd.description}</p>` : ''}
                 </div>
                 
                 <!-- Код - одна строка с кнопкой копирования СПРАВА -->
-                <div class="card-code code-scrollbar relative cursor-pointer" data-copy="${cmd.id}" title="Кликните чтобы скопировать всю команду">
+                <div class="card-code code-scrollbar relative" data-copy="${cmd.id}" title="Кликните чтобы скопировать всю команду">
                     
                     <!-- Градиент затемнения справа -->
                     <div class="code-fade"></div>
                     
                     <!-- Кнопка копирования СПРАВА -->
-                    <button class="copy-btn" data-copy-btn="${cmd.id}" title="Копировать">
+                    <button type="button" class="copy-btn" data-copy-btn="${cmd.id}" title="Копировать">
                         <i class="fa-regular fa-copy"></i>
                         <span>Копировать</span>
                     </button>
                     
                     <!-- Сам код -->
-                    <code class="font-mono text-[13px] text-slate-300">${highlightedCode}</code>
+                    <code class="font-mono text-slate-300">${highlightedCode}</code>
                     ${multiLineBadge}
                 </div>
 
                 <!-- Теги -->
                 ${cmd.tags && cmd.tags.length > 0 ? `
-                <div class="card-footer border-t border-slate-700/30 flex gap-2 overflow-x-auto no-scrollbar">
-                    ${cmd.tags.map(t => `<span class="text-[10px] text-slate-500 hover:text-slate-400 cursor-pointer transition-colors whitespace-nowrap">#${t}</span>`).join('')}
+                <div class="card-footer border-t border-slate-700/30 flex gap-3 overflow-x-auto no-scrollbar">
+                    ${cmd.tags.map(t => `<span class="tag text-slate-500 hover:text-slate-400 cursor-pointer transition-colors whitespace-nowrap">#${t}</span>`).join('')}
                 </div>
                 ` : ''}
             </div>
@@ -134,13 +132,17 @@ const UI = {
         this.elements.grid.querySelectorAll('.copy-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                e.preventDefault();
                 handlers.onCopy(btn.dataset.copyBtn);
             });
         });
         
         // Клик по области кода
         this.elements.grid.querySelectorAll('.card-code[data-copy]').forEach(el => {
-            el.addEventListener('click', () => handlers.onCopy(el.dataset.copy));
+            el.addEventListener('click', (e) => {
+                if (e.target.closest('.copy-btn')) return;
+                handlers.onCopy(el.dataset.copy);
+            });
         });
         
         this.elements.grid.querySelectorAll('button[data-edit]').forEach(btn => {
