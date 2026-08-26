@@ -60,10 +60,20 @@ body {
     animation: fadeIn 0.3s ease-out forwards;
 }
 
+/* Стили подсветки синтаксиса */
 .syntax-keyword { color: #c678dd; }
 .syntax-cmd { color: #61afef; }
 .syntax-arg { color: #e5c07b; }
 .syntax-comment { color: #5c6370; font-style: italic; }
+
+/* Кастомная подсветка через {} */
+.syntax-highlight {
+    color: #e5c07b;
+    background: rgba(229, 192, 123, 0.15);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 500;
+}
 
 #toast-container {
     position: fixed;
@@ -118,7 +128,7 @@ body {
     font-size: 13px;
 }
 
-/* Кодовый блок - без скролла, с отступом под кнопку */
+/* Кодовый блок */
 .command-card .card-code {
     position: relative;
     background: #020617;
@@ -128,7 +138,6 @@ body {
     cursor: pointer;
 }
 
-/* Текст кода обрезается многоточием */
 .command-card .card-code code {
     display: inline;
     white-space: nowrap;
@@ -136,7 +145,6 @@ body {
     line-height: 1.5;
 }
 
-/* Градиент для плавного затемнения под кнопкой */
 .command-card .code-fade {
     position: absolute;
     right: 90px;
@@ -192,4 +200,17 @@ body {
 
 .command-card .card-footer .tag {
     font-size: 12px;
+}
+
+/* Подсказка в модальном окне */
+.template-hint {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.template-hint .example {
+    color: #e5c07b;
+    background: rgba(229, 192, 123, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
 }

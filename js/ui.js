@@ -72,7 +72,10 @@ const UI = {
     createCard(cmd) {
         const lines = cmd.template.split('\n');
         const firstLine = lines[0];
-        const highlightedCode = Utils.highlightSyntax(firstLine);
+        
+        // Используем новый парсер с поддержкой {}
+        const parsed = Utils.parseTemplate(firstLine);
+        const highlightedCode = parsed.html;
         
         const multiLineBadge = lines.length > 1 
             ? `<span class="text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded ml-2 whitespace-nowrap">+${lines.length - 1} строк</span>` 
@@ -99,7 +102,7 @@ const UI = {
                     ${cmd.description ? `<p class="description text-slate-500 truncate leading-relaxed">${cmd.description}</p>` : ''}
                 </div>
                 
-                <!-- Код - одна строка с кнопкой копирования СПРАВА -->
+                <!-- Код с подсветкой {} -->
                 <div class="card-code" data-copy="${cmd.id}" title="Кликните чтобы скопировать всю команду">
                     
                     <div class="code-fade"></div>
@@ -109,7 +112,7 @@ const UI = {
                         <span>Копировать</span>
                     </button>
                     
-                    <code class="font-mono text-slate-300">${highlightedCode}</code>
+                    <code class="font-mono">${highlightedCode}</code>
                     ${multiLineBadge}
                 </div>
 

@@ -103,7 +103,7 @@
                 </div>
             </div>
 
-            <!-- Grid - напрямую grid с overflow -->
+            <!-- Grid -->
             <div id="commands-grid" class="flex-1 overflow-y-auto p-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 content-start auto-rows-min">
             </div>
         </main>
@@ -150,7 +150,10 @@
                     <label class="block text-xs font-medium text-slate-400 mb-1">Команда / Шаблон</label>
                     <div class="relative">
                         <textarea id="cmd-template" rows="4" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none text-green-400 font-mono text-sm" placeholder="show ip interface brief"></textarea>
-                        <div class="absolute bottom-2 right-2 text-xs text-slate-500">Используйте <span class="bg-slate-800 px-1 rounded text-slate-300">{{variable}}</span> для шаблонов</div>
+                        <div class="template-hint absolute bottom-2 right-2">
+                            <span class="example">{переменная}</span> для подсветки, 
+                            <span class="example">{{шаблон}}</span> для шаблонов
+                        </div>
                     </div>
                 </div>
 
