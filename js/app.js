@@ -94,13 +94,30 @@ class NetForgeApp {
         this.renderGrid();
     }
 
-    renderGrid() {
+        renderGrid() {
         const filtered = this.getFilteredCommands();
         UI.renderGrid(filtered, {
             onAdd: () => Modal.open(),
             onEdit: (id) => this.editCommand(id),
             onDelete: (id) => this.deleteCommand(id),
-            onCopy: (id) => this.copyCommand(id)
+            onCopy: (id) => this.copyCommand(id),
+            
+            // === ДОБАВЬТЕ ЭТО ===
+            onHistory: (id) => {
+                const cmd = this.commands.find(c => c.id === id);
+                if (cmd) {
+                    History.openHistoryModal(cmd, (restoredCmd) => {
+                        // Этот код выполнится, когда пользователь нажмет "Восстановить"
+                        const index = this.commands.findIndex(c => c.id === restoredCmd.id);
+                        if (index !== -1) {
+                            this.commands[index] = restoredCmd;
+                            Storage.save(this.commands);
+                            this.render();
+                            UI.showToast('Версия восстановлена!', 'success');
+                        }
+                    });
+                }
+            }
         });
     }
 
@@ -115,20 +132,25 @@ class NetForgeApp {
     }
 
     handleSave(command) {
-        const index = this.commands.findIndex(c => c.id === command.id);
+    const index = this.commands.findIndex(c => c.id === command.id);
         
-        if (index !== -1) {
-            this.commands[index] = command;
-            UI.showToast('Команда обновлена', 'success');
-        } else {
-            this.commands.unshift(command);
-            UI.showToast('Команда добавлена', 'success');
-        }
+      if (index !== -1) {
+            // Редактирование существующей команды — делаем снапшот перед сохранением
+         const existingCmd = this.commands[index];
+         const finalCommand = History.createSnapshot(existingCmd, command);
+            
+         this.commands[index] = finalCommand;
+         UI.showToast('Команда обновлена', 'success');
+    } else {
+         // Новая команда — просто сохраняем
+        const finalCommand = History.createSnapshot(null, command);
+        this.commands.unshift(finalCommand);
+        UI.showToast('Команда добавлена', 'success');
+    }
 
         Storage.save(this.commands);
         this.render();
     }
-
     editCommand(id) {
         const command = this.commands.find(c => c.id === id);
         if (command) {

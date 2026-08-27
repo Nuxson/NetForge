@@ -94,6 +94,9 @@ const UI = {
                             <button data-delete="${cmd.id}" class="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors" title="Удалить">
                                 <i class="fa-solid fa-trash text-xs"></i>
                             </button>
+                            <button data-history="${cmd.id}" class="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors" title="История">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
                         </div>
                     </div>
                     ${cmd.description ? `<p class="description text-slate-500 truncate leading-relaxed">${cmd.description}</p>` : ''}
@@ -104,7 +107,7 @@ const UI = {
                     
                     <div class="code-fade"></div>
                     
-                    <button type="button" class="copy-btn" data-copy-btn="${cmd.id}" title="Копировать">
+                    <button type="button" class="copy-btn" data-copy-btn="${cmd.id}" title="">
                         <i class="fa-regular fa-copy"></i>
                         <span>Копировать</span>
                     </button>
@@ -149,6 +152,14 @@ const UI = {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 handlers.onDelete(btn.dataset.delete);
+            });
+        });
+        this.elements.grid.querySelectorAll('button[data-history]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (handlers.onHistory) {
+                    handlers.onHistory(btn.dataset.history);
+                }
             });
         });
     },
