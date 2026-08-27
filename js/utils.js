@@ -9,6 +9,33 @@ const Utils = {
         return div.innerHTML;
     },
 
+    /**
+     * Парсит шаблон команды.
+     * Находит переменные вида {{name}} и возвращает их список.
+     * В базовой версии просто возвращает текст как есть.
+     */
+    parseTemplate(template) {
+        if (!template) return { plain: '', variables: [] };
+        
+        // Находим все {{переменные}} в тексте
+        const regex = /\{\{([^}]+)\}\}/g;
+        const variables = [];
+        let match;
+        
+        while ((match = regex.exec(template)) !== null) {
+            const varName = match[1].trim();
+            if (!variables.includes(varName)) {
+                variables.push(varName);
+            }
+        }
+
+        // Возвращаем исходный текст и список найденных переменных
+        return {
+            plain: template,
+            variables: variables
+        };
+    },
+
     // Ключевые слова для специальной подсветки
     KEYWORDS: {
         // Команды show/display
@@ -185,12 +212,12 @@ const Utils = {
         
         // Цвета для позиций слов (циклически)
         const wordColors = [
-            'syntax-pos-1',  // первое слово
-            'syntax-pos-2',  // второе слово
-            'syntax-pos-3',  // третье
-            'syntax-pos-4',  // четвёртое
-            'syntax-pos-5',  // пятое
-            'syntax-pos-6',  // шестое
+            'syntax-pos-1',
+            'syntax-pos-2',
+            'syntax-pos-3',
+            'syntax-pos-4',
+            'syntax-pos-5',
+            'syntax-pos-6',
         ];
         
         let wordIndex = 0;
@@ -199,24 +226,19 @@ const Utils = {
         tokens.forEach(token => {
             if (!token) return;
             
-            // Пробелы - как есть
             if (/^\s+$/.test(token)) {
                 result += token;
             } 
-            // Спецсимволы
             else if (/^[|;,=&]$/.test(token)) {
                 result += `<span class="syntax-sep">${token}</span>`;
             } 
-            // Слова - проверяем ключевые слова, иначе позиционная подсветка
             else {
                 const lowerToken = token.toLowerCase();
                 const keywordClass = Utils.KEYWORDS[lowerToken];
                 
                 if (keywordClass) {
-                    // Ключевое слово - специальный цвет
                     result += `<span class="${keywordClass}">${token}</span>`;
                 } else {
-                    // Обычное слово - позиционная подсветка
                     const colorClass = wordColors[wordIndex % wordColors.length];
                     result += `<span class="${colorClass}">${token}</span>`;
                 }
