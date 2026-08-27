@@ -91,7 +91,7 @@ const AutoBackup = {
     },
 
     // Ручной запуск бэкапа
-    manualBackup() {
+    async manualBackup() {
         const commands = Storage.load();
         if (commands.length === 0) {
             UI.showToast('Нет данных для бэкапа', 'danger');
