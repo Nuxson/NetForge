@@ -12,8 +12,40 @@ class NetForgeApp {
         Modal.init((command) => this.handleSave(command));
         this.bindEvents();
         this.initAutoBackup();
+        this.initPWAInstall();       // ← новое
+        await Logger.init();         // ← новое
+        this.bindLoggerEvents();     
         this.render();
     }
+
+    initPWAInstall() {
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('btn-install-pwa');
+
+    // Браузер срабатывает это событие, когда сайт готов к установке
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.classList.remove('hidden'); // Показываем кнопку
+    });
+
+    // Клик по кнопке
+    installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            UI.showToast('NetForge установлен! 🎉', 'success');
+        }
+        deferredPrompt = null;
+        installBtn.classList.add('hidden');
+    });
+
+    // Скрываем кнопку, если приложение уже установлено
+    window.addEventListener('appinstalled', () => {
+        installBtn.classList.add('hidden');
+    });
+}
 
     initAutoBackup() {
         // Обновляем UI статуса
@@ -56,6 +88,18 @@ class NetForgeApp {
         document.getElementById('btn-clear-all').addEventListener('click', () => this.clearAll());
         document.getElementById('btn-export').addEventListener('click', () => this.export());
         document.getElementById('import-file').addEventListener('change', (e) => this.import(e.target));
+    }
+    bindLoggerEvents() {
+        const btn = document.getElementById('btn-toggle-logs');
+        if (btn) {
+            btn.addEventListener('click', async () => {
+                if (Logger.dirHandle) {
+                    await Logger.disableLogging();
+                } else {
+                    await Logger.enableLogging();
+                }
+            });
+        }
     }
 
     getVendors() {
@@ -141,11 +185,15 @@ class NetForgeApp {
             
          this.commands[index] = finalCommand;
          UI.showToast('Команда обновлена', 'success');
+        Logger.writeLog('UPDATE_COMMAND', { id: command.id, title: command.title }); // ← лог
+
     } else {
          // Новая команда — просто сохраняем
         const finalCommand = History.createSnapshot(null, command);
         this.commands.unshift(finalCommand);
         UI.showToast('Команда добавлена', 'success');
+        Logger.writeLog('CREATE_COMMAND', { id: command.id, title: command.title }); // ← лог
+
     }
 
         Storage.save(this.commands);
