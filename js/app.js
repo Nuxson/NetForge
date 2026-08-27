@@ -52,7 +52,7 @@ class NetForgeApp {
         this.updateBackupUI();
         
         // Проверяем и создаём бэкап если нужно
-        const backupCreated = AutoBackup.checkAndBackup();
+        const backupCreated = await AutoBackup.checkAndBackup();
         if (backupCreated) {
             setTimeout(() => {
                 UI.showToast('Автобэкап создан: ' + AutoBackup.getTodayDate(), 'success');
@@ -91,11 +91,33 @@ class NetForgeApp {
 }
 
     bindEvents() {
+    // Основной поиск (десктоп)
         UI.elements.searchInput.addEventListener('input', (e) => {
             this.searchQuery = e.target.value.toLowerCase();
+            
+            // Синхронизируем с мобильным поиском (в сайдбаре)
+            const mobileSearch = document.getElementById('global-search-mobile');
+            if (mobileSearch) {
+                mobileSearch.value = e.target.value;
+            }
+            
             this.renderGrid();
         });
 
+        // Мобильный поиск (внутри сайдбара, только на мобильных)
+        const mobileSearch = document.getElementById('global-search-mobile');
+        if (mobileSearch) {
+            mobileSearch.addEventListener('input', (e) => {
+                this.searchQuery = e.target.value.toLowerCase();
+                
+                // Синхронизируем с десктопным поиском (в хедере)
+                UI.elements.searchInput.value = e.target.value;
+                
+                this.renderGrid();
+            });
+        }
+
+        // Остальные кнопки
         document.getElementById('btn-new-cmd').addEventListener('click', () => Modal.open());
         document.getElementById('btn-clear-all').addEventListener('click', () => this.clearAll());
         document.getElementById('btn-export').addEventListener('click', () => this.export());

@@ -2,50 +2,97 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NetForge | Менеджер Сетевых Команд</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- PWA манифест -->
     <link rel="manifest" href="manifest.json">
-    <meta name="description" content="Локальная база знаний CLI-команд для сетевых инженеров">
     <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="Локальная база знаний CLI-команд для сетевых инженеров">
+    
+    <!-- iOS PWA поддержка -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NetForge">
+    <link rel="apple-touch-icon" href="icons/icon-192.svg">
+    
+    <!-- Фавикон -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
 
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
 
     <!-- Header -->
-    <header class="h-16 glass flex items-center justify-between px-6 z-20 border-b border-slate-700 shrink-0">
-        <div class="flex items-center gap-3">
+    <header class="h-16 glass flex items-center justify-between px-4 sm:px-6 z-20 border-b border-slate-700 shrink-0">
+        <!-- Левая часть: Бургер + Логотип -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <!-- Кнопка бургер-меню (только на мобильных) -->
+            <button id="btn-menu" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700/50 transition-colors">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
             <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
                 <i class="fa-solid fa-network-wired text-white text-sm"></i>
             </div>
-            <h1 class="text-xl font-bold tracking-tight">Net<span class="text-blue-500">Forge</span></h1>
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight">Net<span class="text-blue-500">Forge</span></h1>
         </div>
         
-        <div class="flex items-center gap-4">
-            <div class="relative">
+        <!-- Правая часть: Поиск + Кнопки -->
+        <div class="flex items-center gap-2 sm:gap-4">
+            <!-- Поиск: скрыт на мобильных -->
+            <div class="relative hidden sm:block">
                 <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm"></i>
                 <input type="text" id="global-search" placeholder="Поиск команд..." 
-                    class="bg-slate-800 border border-slate-700 text-sm rounded-full pl-9 pr-4 py-1.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-64 transition-all">
+                    class="bg-slate-800 border border-slate-700 text-sm rounded-full pl-9 pr-4 py-1.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-48 md:w-64 transition-all">
             </div>
-            <button id="btn-new-cmd" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-blue-600/20">
-                <i class="fa-solid fa-plus"></i> Новая команда
+            
+            <!-- Кнопка "+": текст скрыт на мобильных -->
+            <button id="btn-new-cmd" class="bg-blue-600 hover:bg-blue-500 text-white px-3 sm:px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-blue-600/20">
+                <i class="fa-solid fa-plus"></i> 
+                <span class="hidden sm:inline">Новая команда</span>
             </button>
-            <button id="btn-install-pwa" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2">
-                <i class="fa-solid fa-download"></i> Установить
+            
+            <!-- Кнопка установки PWA -->
+            <button id="btn-install-pwa" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white px-2 sm:px-3 py-1.5 rounded-full text-sm font-medium transition-colors items-center gap-2">
+                <i class="fa-solid fa-download"></i> 
+                <span class="hidden md:inline">Установить</span>
             </button>
         </div>
     </header>
 
     <!-- Main Layout -->
-    <div class="flex flex-1 min-h-0">
+    <div class="flex flex-1 min-h-0 relative">
         
+        <!-- Оверлей для мобильного меню -->
+        <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden" onclick="toggleMobileMenu()"></div>
+
         <!-- Sidebar -->
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col hidden md:flex overflow-y-auto shrink-0">
+        <aside id="sidebar" class="
+            w-72 md:w-64 bg-slate-900 border-r border-slate-800 flex flex-col 
+            md:flex overflow-y-auto shrink-0
+            fixed md:static inset-y-0 left-0 z-40
+            transform -translate-x-full md:translate-x-0
+            transition-transform duration-300 ease-in-out
+        ">
+            <!-- Кнопка закрытия для мобильного меню -->
+            <div class="md:hidden flex justify-end p-2 border-b border-slate-800">
+                <button onclick="toggleMobileMenu()" class="p-2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Поиск для мобильных (внутри сайдбара) -->
+            <div class="sm:hidden p-4 border-b border-slate-800">
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="global-search-mobile" placeholder="Поиск команд..." 
+                        class="w-full bg-slate-800 border border-slate-700 text-sm rounded-full pl-9 pr-4 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+
             <div class="p-4 shrink-0">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Вендоры</h3>
                 <div id="vendor-filters" class="space-y-1"></div>
@@ -85,17 +132,18 @@
                     </div>
                 </div>
             </div>
+            
             <!-- LOGGER -->
             <div class="p-4 border-t border-slate-800 shrink-0">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Логи</h3>
-                   <div class="bg-slate-800/50 rounded-lg p-3 space-y-2">
+                <div class="bg-slate-800/50 rounded-lg p-3 space-y-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs text-slate-400">Запись в папку</span>
                         <span id="log-status-text" class="text-xs text-slate-400">Выключена</span>
                     </div>
-                        <button id="btn-toggle-logs" class="w-full px-2 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded text-xs transition-colors">
-                           <i class="fa-solid fa-folder mr-1"></i> Включить
-                     </button>
+                    <button id="btn-toggle-logs" class="w-full px-2 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded text-xs transition-colors">
+                        <i class="fa-solid fa-folder mr-1"></i> Включить
+                    </button>
                 </div>
             </div>
 
@@ -114,9 +162,9 @@
         <!-- Content Area -->
         <main class="flex-1 flex flex-col min-h-0 bg-slate-900/50">
             <!-- Toolbar -->
-            <div class="h-12 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-900/80 backdrop-blur shrink-0">
+            <div class="h-12 border-b border-slate-800 flex items-center justify-between px-4 sm:px-6 bg-slate-900/80 backdrop-blur shrink-0">
                 <div class="flex items-center gap-2 text-sm text-slate-400">
-                    <span id="result-count">0</span> команд найдено
+                    <span id="result-count">0</span> <span class="hidden sm:inline">команд найдено</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <button id="btn-export" class="p-2 text-slate-400 hover:text-white transition-colors" title="Экспорт JSON">
@@ -130,7 +178,7 @@
             </div>
 
             <!-- Grid -->
-            <div id="commands-grid" class="flex-1 overflow-y-auto p-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 content-start auto-rows-min">
+            <div id="commands-grid" class="flex-1 overflow-y-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 content-start auto-rows-min">
             </div>
         </main>
     </div>
@@ -138,19 +186,27 @@
     <!-- Modal -->
     <div id="modal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity" id="modal-overlay"></div>
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-slate-800 border border-slate-700 rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
+        <div class="
+            fixed inset-0 sm:absolute sm:top-1/2 sm:left-1/2 
+            sm:transform sm:-translate-x-1/2 sm:-translate-y-1/2 
+            w-full sm:max-w-2xl 
+            bg-slate-800 border-slate-700 sm:border 
+            rounded-none sm:rounded-xl 
+            shadow-2xl flex flex-col 
+            max-h-[100vh] sm:max-h-[90vh]
+        ">
             
-            <div class="p-6 border-b border-slate-700 flex justify-between items-center shrink-0">
-                <h2 class="text-xl font-bold text-white" id="modal-title">Новая команда</h2>
+            <div class="p-4 sm:p-6 border-b border-slate-700 flex justify-between items-center shrink-0">
+                <h2 class="text-lg sm:text-xl font-bold text-white" id="modal-title">Новая команда</h2>
                 <button id="modal-close" class="text-slate-400 hover:text-white">
                     <i class="fa-solid fa-times"></i>
                 </button>
             </div>
 
-            <div class="p-6 overflow-y-auto space-y-4">
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
                 <input type="hidden" id="cmd-id">
                 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-400 mb-1">Название</label>
                         <input type="text" id="cmd-title" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none text-white" placeholder="Например: Show Interface Status">
@@ -184,7 +240,7 @@
                 </div>
             </div>
 
-            <div class="p-6 border-t border-slate-700 flex justify-end gap-3 bg-slate-800/50 rounded-b-xl shrink-0">
+            <div class="p-4 sm:p-6 border-t border-slate-700 flex justify-end gap-3 bg-slate-800/50 sm:rounded-b-xl shrink-0">
                 <button id="modal-cancel" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors">Отмена</button>
                 <button id="modal-save" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium shadow-lg shadow-blue-600/20 transition-all transform active:scale-95">Сохранить</button>
             </div>
@@ -204,7 +260,23 @@
     <script src="js/logger.js"></script>
     <script src="js/app.js"></script>
 
-    <!-- Регистрация Service Worker для PWA -->
+    <!-- Мобильное меню -->
+    <script>
+    function toggleMobileMenu() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobile-overlay');
+        
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+        
+        // Блокируем скролл body когда меню открыто
+        document.body.style.overflow = sidebar.classList.contains('-translate-x-full') ? '' : 'hidden';
+    }
+
+    document.getElementById('btn-menu').addEventListener('click', toggleMobileMenu);
+    </script>
+
+    <!-- Регистрация Service Worker -->
     <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

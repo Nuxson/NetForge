@@ -1,5 +1,5 @@
 // sw.js — Service Worker для NetForge (Исправленная версия)
-const CACHE_NAME = 'netforge-cache-v1';
+const CACHE_NAME = 'netforge-cache-v2';
 
 // Убрали cdn.tailwindcss.com из списка, так как он блокирует CORS-запросы.
 const ASSETS_TO_CACHE = [
