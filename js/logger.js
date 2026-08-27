@@ -118,6 +118,39 @@ const Logger = {
         }
     },
 
+        // Запись бэкапа в выбранную папку
+    async writeBackup(commands) {
+        if (!this.dirHandle) return false;
+
+        try {
+            // Проверяем разрешение
+            const permission = await this.dirHandle.queryPermission({ mode: 'readwrite' });
+            if (permission !== 'granted') {
+                const newPerm = await this.dirHandle.requestPermission({ mode: 'readwrite' });
+                if (newPerm !== 'granted') return false;
+            }
+
+            // Имя файла: netforge-backup-2026-08-27.json
+            const today = new Date().toISOString().split('T')[0];
+            const fileName = `netforge-backup-${today}.json`;
+
+            // Создаём или перезаписываем файл
+            const fileHandle = await this.dirHandle.getFileHandle(fileName, { create: true });
+            const writable = await fileHandle.createWritable();
+            
+            // Форматируем JSON с отступами
+            const dataStr = JSON.stringify(commands, null, 2);
+            await writable.write(dataStr);
+            await writable.close();
+
+            console.log(`[Logger] Бэкап сохранён: ${fileName}`);
+            return true;
+        } catch (err) {
+            console.error('[Logger] Ошибка записи бэкапа:', err);
+            return false;
+        }
+    },
+
     updateUI(enabled) {
         const btn = document.getElementById('btn-toggle-logs');
         const status = document.getElementById('log-status-text');

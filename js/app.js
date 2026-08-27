@@ -75,8 +75,20 @@ class NetForgeApp {
     }
 
     updateBackupUI() {
-        UI.updateBackupStatus(AutoBackup.getStatus());
+    UI.updateBackupStatus(AutoBackup.getStatus());
+    
+    // Обновляем текст о месте сохранения бэкапов
+    const destText = document.getElementById('backup-destination-text');
+    if (destText) {
+        if (typeof Logger !== 'undefined' && Logger.dirHandle) {
+            destText.textContent = `В папку: ${Logger.dirHandle.name}`;
+            destText.className = 'text-xs text-green-400';
+        } else {
+            destText.textContent = 'В загрузки';
+            destText.className = 'text-xs text-blue-400';
+        }
     }
+}
 
     bindEvents() {
         UI.elements.searchInput.addEventListener('input', (e) => {
@@ -98,6 +110,7 @@ class NetForgeApp {
                 } else {
                     await Logger.enableLogging();
                 }
+                this.updateBackupUI(); // ← добавьте эту строку
             });
         }
     }
