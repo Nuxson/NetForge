@@ -94,8 +94,8 @@ const UI = {
                             <button data-delete="${cmd.id}" class="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors" title="Удалить">
                                 <i class="fa-solid fa-trash text-xs"></i>
                             </button>
-                            <button data-history="${cmd.id}" class="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors" title="История">
-                                <i class="fa-solid fa-trash text-xs"></i>
+                            <button data-history="${cmd.id}" class="p-2 text-slate-400 hover:text-yellow-400 hover:bg-slate-700 rounded transition-colors" title="История изменений">
+                                <i class="fa-solid fa-circle-exclamation text-xs"></i>
                             </button>
                         </div>
                     </div>
