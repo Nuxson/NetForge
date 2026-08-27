@@ -52,7 +52,7 @@ class NetForgeApp {
         this.updateBackupUI();
         
         // Проверяем и создаём бэкап если нужно
-        const backupCreated = await AutoBackup.checkAndBackup();
+        const backupCreated = AutoBackup.checkAndBackup();
         if (backupCreated) {
             setTimeout(() => {
                 UI.showToast('Автобэкап создан: ' + AutoBackup.getTodayDate(), 'success');
