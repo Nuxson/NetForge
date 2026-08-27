@@ -6,7 +6,7 @@ class NetForgeApp {
         this.searchQuery = '';
     }
 
-    init() {
+    async init() {
         this.commands = Storage.load();
         UI.init();
         Modal.init((command) => this.handleSave(command));
