@@ -2,9 +2,9 @@ const AutoBackup = {
     KEY_LAST_BACKUP: 'netforge_last_backup_date',
     KEY_ENABLED: 'netforge_autobackup_enabled',
 
-    init() {
-        this.checkAndBackup();
-    },
+        async init() {
+            await this.checkAndBackup();
+        },
 
     isEnabled() {
         const enabled = localStorage.getItem(this.KEY_ENABLED);
@@ -36,7 +36,7 @@ const AutoBackup = {
         return lastBackup !== today;
     },
 
-    checkAndBackup() {
+    async checkAndBackup() {  // ← ДОБАВИЛИ async
         if (!this.shouldBackup()) return false;
 
         const commands = Storage.load();
@@ -45,11 +45,11 @@ const AutoBackup = {
             return false;
         }
 
-        this.performBackup(commands);
+        await this.performBackup(commands);  // ← ДОБАВИЛИ await
         return true;
     },
 
-        async performBackup(commands) {
+    async performBackup(commands) {
         const today = this.getTodayDate();
         const dataStr = JSON.stringify(commands, null, 2);
         
