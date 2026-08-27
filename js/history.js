@@ -114,7 +114,10 @@ const History = {
     restoreVersion(cmd, versionIndex, onRestore) {
         const oldVersion = cmd.history[versionIndex];
         
-        // Создаем объект с текущим состоянием (без истории), чтобы сохранить его как снапшот
+        // ВАЖНО: Копируем всю текущую историю, чтобы не потерять старые версии!
+        const existingHistory = [...(cmd.history || [])];
+
+        // Создаем объект с ТЕКУЩИМ состоянием (именно оно уйдет в историю как новая запись)
         const currentSnapshot = {
             id: cmd.id,
             vendor: cmd.vendor,
@@ -122,7 +125,7 @@ const History = {
             template: cmd.template,
             description: cmd.description,
             tags: cmd.tags,
-            history: []
+            history: existingHistory   // ← Ключевое изменение: передаем существующую историю
         };
 
         // Создаем объект с восстановленными данными
@@ -132,9 +135,12 @@ const History = {
             template: oldVersion.template,
             description: oldVersion.description,
             tags: oldVersion.tags
+            // history сюда попадет автоматически через createSnapshot
         };
 
-        // Делаем снапшот текущего состояния перед откатом
+        // Делаем снапшот: 
+        // currentSnapshot (со всей историей) будет сохранен в начало массива history
+        // restoredCmd получит этот же массив истории в итоговом объекте
         const finalCmd = this.createSnapshot(currentSnapshot, restoredCmd);
         
         // Передаем готовую команду в app.js для сохранения
