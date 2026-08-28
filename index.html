@@ -189,7 +189,7 @@
         <div class="
             fixed inset-0 sm:absolute sm:top-1/2 sm:left-1/2 
             sm:transform sm:-translate-x-1/2 sm:-translate-y-1/2 
-            w-full sm:max-w-4xl lg:max-w-6xl xl:max-w-7xl
+            w-full sm:max-w-5xl lg:max-w-6xl xl:max-w-7xl
             bg-slate-800 border-slate-700 sm:border 
             rounded-none sm:rounded-xl 
             shadow-2xl flex flex-col 
@@ -203,7 +203,7 @@
                 </button>
             </div>
 
-            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1 min-h-0">
                 <input type="hidden" id="cmd-id">
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -230,16 +230,16 @@
                     </div>
                 </div>
 
-                <div>
+                <div class="flex-1 min-h-0 flex flex-col">
                     <label class="block text-xs font-medium text-slate-400 mb-1">Команда / Шаблон</label>
-                    <div class="relative">
-                        <textarea id="cmd-template" rows="10" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 focus:border-blue-500 focus:outline-none text-green-400 font-mono text-sm resize-y min-h-[200px]" placeholder="show ip interface brief"></textarea>
+                    <div class="relative flex-1 min-h-0">
+                        <textarea id="cmd-template" rows="10" class="w-full h-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 focus:border-blue-500 focus:outline-none text-green-400 font-mono text-sm resize-none min-h-[250px]" placeholder="show ip interface brief"></textarea>
                     </div>
                 </div>
 
-                <div>
+                <div class="flex-1 min-h-0 flex flex-col">
                     <label class="block text-xs font-medium text-slate-400 mb-1">Описание / Примечания</label>
-                    <textarea id="cmd-desc" rows="5" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 focus:border-blue-500 focus:outline-none text-slate-300 text-sm resize-y min-h-[120px]" placeholder="Краткое описание что делает команда..."></textarea>
+                    <textarea id="cmd-desc" rows="4" class="w-full h-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 focus:border-blue-500 focus:outline-none text-slate-300 text-sm resize-none min-h-[100px]" placeholder="Краткое описание что делает команда..."></textarea>
                 </div>
 
                 <div>
