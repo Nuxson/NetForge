@@ -12,6 +12,8 @@ const ASSETS_TO_CACHE = [
   './js/modal.js',
   './js/autobackup.js',
   './js/app.js',
+  './js/logger.js',      // ← Добавлен
+  './js/history.js',     // ← Добавлен
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
   'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap'
 ];

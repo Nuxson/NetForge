@@ -47,13 +47,25 @@ const Storage = {
                     if (!Array.isArray(data)) {
                         throw new Error('Invalid format: expected array');
                     }
-                    const validData = data.filter(item => item.title && item.template);
+                    // Валидация импортируемых данных
+                    const validData = data.filter(item => {
+                        const hasRequired = item.title && item.template;
+                        const hasValidId = item.id && typeof item.id === 'string';
+                        const hasValidVendor = !item.vendor || typeof item.vendor === 'string';
+                        const hasValidTags = !item.tags || Array.isArray(item.tags);
+                        return hasRequired && hasValidId && hasValidVendor && hasValidTags;
+                    });
+                    
+                    if (validData.length !== data.length) {
+                        console.warn(`Импортировано ${validData.length} из ${data.length} команд (невалидные отфильтрованы)`);
+                    }
+                    
                     resolve(validData);
                 } catch (err) {
-                    reject(err);
+                    reject(new Error('Ошибка формата файла: ' + err.message));
                 }
             };
-            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
             reader.readAsText(file);
         });
     }

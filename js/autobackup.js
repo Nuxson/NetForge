@@ -55,27 +55,34 @@ const AutoBackup = {
         
         // Пробуем сохранить в выбранную папку через Logger
         if (typeof Logger !== 'undefined' && Logger.dirHandle) {
-            const savedToFolder = await Logger.writeBackup(commands);
-            if (savedToFolder) {
-                this.setLastBackupDate(today);
-                console.log(`[AutoBackup] Бэкап сохранён в папку: netforge-backup-${today}.json`);
-                UI.showToast(`Бэкап сохранён в "${Logger.dirHandle.name}"`, 'success');
-                return true;
+            try {
+                const savedToFolder = await Logger.writeBackup(commands);
+                if (savedToFolder) {
+                    this.setLastBackupDate(today);
+                    console.log(`[AutoBackup] Бэкап сохранён в папку: netforge-backup-${today}.json`);
+                    UI.showToast(`Бэкап сохранён в "${Logger.dirHandle.name}"`, 'success');
+                    return true;
+                }
+            } catch (err) {
+                console.error('[AutoBackup] Ошибка записи в папку:', err);
+                UI.showToast('Ошибка записи в папку, скачиваем в Загрузки', 'warning');
             }
         }
 
         // Fallback: обычное скачивание в папку "Загрузки"
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `netforge-autobackup-${today}.json`;
-        
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        
         try {
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `netforge-autobackup-${today}.json`;
+            
+            a.style.display = 'none';
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
             this.setLastBackupDate(today);
             console.log(`[AutoBackup] Бэкап скачан: netforge-autobackup-${today}.json`);
             UI.showToast('Бэкап скачан в папку Загрузки', 'success');
@@ -84,9 +91,6 @@ const AutoBackup = {
             console.error('[AutoBackup] Ошибка создания бэкапа:', err);
             UI.showToast('Ошибка создания бэкапа', 'danger');
             return false;
-        } finally {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
         }
     },
 

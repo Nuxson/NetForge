@@ -49,36 +49,66 @@ const Logger = {
 
     // Сохраняем хэндл папки в IndexedDB (localStorage не может хранить хэндлы)
     async storeHandle(handle) {
-        return new Promise((resolve) => {
-            const req = indexedDB.open('NetForgeLogs', 1);
-            req.onupgradeneeded = (e) => {
-                e.target.result.createObjectStore('handles');
-            };
-            req.onsuccess = (e) => {
-                const db = e.target.result;
-                const tx = db.transaction('handles', 'readwrite');
-                tx.objectStore('handles').put(handle, 'logDir');
-                tx.oncomplete = () => db.close();
-                resolve();
-            };
+        return new Promise((resolve, reject) => {
+            try {
+                const req = indexedDB.open('NetForgeLogs', 1);
+                req.onupgradeneeded = (e) => {
+                    e.target.result.createObjectStore('handles');
+                };
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    const tx = db.transaction('handles', 'readwrite');
+                    tx.objectStore('handles').put(handle, 'logDir');
+                    tx.oncomplete = () => {
+                        db.close();
+                        resolve();
+                    };
+                    tx.onerror = () => {
+                        console.error('[Logger] Ошибка транзакции IndexedDB при сохранении хэндла');
+                        reject(new Error('Ошибка записи в IndexedDB'));
+                    };
+                };
+                req.onerror = () => {
+                    console.error('[Logger] Ошибка открытия IndexedDB');
+                    reject(new Error('Не удалось открыть IndexedDB'));
+                };
+            } catch (err) {
+                console.error('[Logger] Критическая ошибка storeHandle:', err);
+                reject(err);
+            }
         });
     },
 
     async getStoredHandle() {
         return new Promise((resolve) => {
-            const req = indexedDB.open('NetForgeLogs', 1);
-            req.onupgradeneeded = (e) => {
-                e.target.result.createObjectStore('handles');
-            };
-            req.onsuccess = (e) => {
-                const db = e.target.result;
-                const tx = db.transaction('handles', 'readonly');
-                const store = tx.objectStore('handles');
-                const getReq = store.get('logDir');
-                getReq.onsuccess = () => resolve(getReq.result || null);
-                getReq.onerror = () => resolve(null);
-            };
-            req.onerror = () => resolve(null);
+            try {
+                const req = indexedDB.open('NetForgeLogs', 1);
+                req.onupgradeneeded = (e) => {
+                    e.target.result.createObjectStore('handles');
+                };
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    const tx = db.transaction('handles', 'readonly');
+                    const store = tx.objectStore('handles');
+                    const getReq = store.get('logDir');
+                    getReq.onsuccess = () => resolve(getReq.result || null);
+                    getReq.onerror = () => {
+                        console.warn('[Logger] Ошибка чтения из IndexedDB');
+                        resolve(null);
+                    };
+                    tx.onerror = () => {
+                        console.warn('[Logger] Ошибка транзакции IndexedDB при чтении');
+                        resolve(null);
+                    };
+                };
+                req.onerror = () => {
+                    console.warn('[Logger] Не удалось открыть IndexedDB для чтения');
+                    resolve(null);
+                };
+            } catch (err) {
+                console.error('[Logger] Критическая ошибка getStoredHandle:', err);
+                resolve(null);
+            }
         });
     },
 
