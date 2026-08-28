@@ -91,29 +91,36 @@ class NetForgeApp {
 }
 
     bindEvents() {
-    // Основной поиск (десктоп)
+    // Основной поиск (десктоп) с debounce для производительности
+        let searchTimeout;
         UI.elements.searchInput.addEventListener('input', (e) => {
-            this.searchQuery = e.target.value.toLowerCase();
-            
-            // Синхронизируем с мобильным поиском (в сайдбаре)
-            const mobileSearch = document.getElementById('global-search-mobile');
-            if (mobileSearch) {
-                mobileSearch.value = e.target.value;
-            }
-            
-            this.renderGrid();
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                this.searchQuery = e.target.value.toLowerCase();
+                
+                // Синхронизируем с мобильным поиском (в сайдбаре)
+                const mobileSearch = document.getElementById('global-search-mobile');
+                if (mobileSearch) {
+                    mobileSearch.value = e.target.value;
+                }
+                
+                this.renderGrid();
+            }, 300); // Debounce 300ms
         });
 
-        // Мобильный поиск (внутри сайдбара, только на мобильных)
+        // Мобильный поиск (внутри сайдбара, только на мобильных) с debounce
         const mobileSearch = document.getElementById('global-search-mobile');
         if (mobileSearch) {
             mobileSearch.addEventListener('input', (e) => {
-                this.searchQuery = e.target.value.toLowerCase();
-                
-                // Синхронизируем с десктопным поиском (в хедере)
-                UI.elements.searchInput.value = e.target.value;
-                
-                this.renderGrid();
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    this.searchQuery = e.target.value.toLowerCase();
+                    
+                    // Синхронизируем с десктопным поиском (в хедере)
+                    UI.elements.searchInput.value = e.target.value;
+                    
+                    this.renderGrid();
+                }, 300); // Debounce 300ms
             });
         }
 
