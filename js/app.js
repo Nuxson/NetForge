@@ -10,6 +10,7 @@ class NetForgeApp {
         this.commands = Storage.load();
         UI.init();
         Modal.init((command) => this.handleSave(command));
+        ViewModal.init((command) => this.editCommand(command.id));
         this.bindEvents();
         this.initAutoBackup();
         this.initPWAInstall();       // ← новое
@@ -187,6 +188,7 @@ class NetForgeApp {
             onEdit: (id) => this.editCommand(id),
             onDelete: (id) => this.deleteCommand(id),
             onCopy: (id) => this.copyCommand(id),
+            onView: (id) => this.viewCommand(id),
             
             // === ДОБАВЬТЕ ЭТО ===
             onHistory: (id) => {
@@ -245,6 +247,13 @@ class NetForgeApp {
         const command = this.commands.find(c => c.id === id);
         if (command) {
             Modal.open(command);
+        }
+    }
+
+    viewCommand(id) {
+        const command = this.commands.find(c => c.id === id);
+        if (command) {
+            ViewModal.open(command);
         }
     }
 

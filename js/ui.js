@@ -88,6 +88,9 @@ const UI = {
                         <h3 class="font-semibold text-slate-100 leading-tight truncate flex-1" title="${cmd.title}">${cmd.title}</h3>
                         
                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                            <button data-view="${cmd.id}" class="p-2 text-slate-400 hover:text-green-400 hover:bg-slate-700 rounded transition-colors" title="Просмотр">
+                                <i class="fa-solid fa-eye text-xs"></i>
+                            </button>
                             <button data-edit="${cmd.id}" class="p-2 text-slate-400 hover:text-blue-400 hover:bg-slate-700 rounded transition-colors" title="Редактировать">
                                 <i class="fa-solid fa-pen text-xs"></i>
                             </button>
@@ -139,6 +142,15 @@ const UI = {
             el.addEventListener('click', (e) => {
                 if (e.target.closest('.copy-btn')) return;
                 handlers.onCopy(el.dataset.copy);
+            });
+        });
+        
+        this.elements.grid.querySelectorAll('button[data-view]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (handlers.onView) {
+                    handlers.onView(btn.dataset.view);
+                }
             });
         });
         

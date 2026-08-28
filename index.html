@@ -193,7 +193,7 @@
             bg-slate-800 border-slate-700 sm:border 
             rounded-none sm:rounded-xl 
             shadow-2xl flex flex-col 
-            max-h-[100vh] sm:max-h-[95vh]
+            h-screen sm:h-auto sm:max-h-[95vh]
         ">
             
             <div class="p-4 sm:p-6 border-b border-slate-700 flex justify-between items-center shrink-0">
@@ -203,10 +203,10 @@
                 </button>
             </div>
 
-            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1 min-h-0">
+            <div class="p-4 sm:p-6 overflow-y-auto flex-1 min-h-0 flex flex-col gap-4">
                 <input type="hidden" id="cmd-id">
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
                     <div>
                         <label class="block text-xs font-medium text-slate-400 mb-1">Название</label>
                         <input type="text" id="cmd-title" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 focus:border-blue-500 focus:outline-none text-white text-base" placeholder="Например: Show Interface Status">
@@ -230,19 +230,19 @@
                     </div>
                 </div>
 
-                <div class="flex-1 min-h-0 flex flex-col">
+                <div class="flex-1 min-h-0 flex flex-col min-h-[300px]">
                     <label class="block text-xs font-medium text-slate-400 mb-1">Команда / Шаблон</label>
                     <div class="relative flex-1 min-h-0">
-                        <textarea id="cmd-template" rows="10" class="w-full h-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 focus:border-blue-500 focus:outline-none text-green-400 font-mono text-sm resize-none min-h-[250px]" placeholder="show ip interface brief"></textarea>
+                        <textarea id="cmd-template" rows="10" class="w-full h-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 focus:border-blue-500 focus:outline-none text-green-400 font-mono text-sm resize-none" placeholder="show ip interface brief"></textarea>
                     </div>
                 </div>
 
-                <div class="flex-1 min-h-0 flex flex-col">
+                <div class="flex-1 min-h-0 flex flex-col min-h-[150px]">
                     <label class="block text-xs font-medium text-slate-400 mb-1">Описание / Примечания</label>
-                    <textarea id="cmd-desc" rows="4" class="w-full h-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 focus:border-blue-500 focus:outline-none text-slate-300 text-sm resize-none min-h-[100px]" placeholder="Краткое описание что делает команда..."></textarea>
+                    <textarea id="cmd-desc" rows="4" class="w-full h-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 focus:border-blue-500 focus:outline-none text-slate-300 text-sm resize-none" placeholder="Краткое описание что делает команда..."></textarea>
                 </div>
 
-                <div>
+                <div class="shrink-0">
                     <label class="block text-xs font-medium text-slate-400 mb-1">Теги (через запятую)</label>
                     <input type="text" id="cmd-tags" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 focus:border-blue-500 focus:outline-none text-white text-base" placeholder="diagnostics, layer2, troubleshooting">
                 </div>
@@ -255,6 +255,70 @@
         </div>
     </div>
 
+    <!-- View Modal -->
+    <div id="view-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity" id="view-modal-overlay"></div>
+        <div class="
+            fixed inset-0 sm:absolute sm:top-1/2 sm:left-1/2 
+            sm:transform sm:-translate-x-1/2 sm:-translate-y-1/2 
+            w-full sm:max-w-4xl lg:max-w-5xl
+            bg-slate-800 border-slate-700 sm:border 
+            rounded-none sm:rounded-xl 
+            shadow-2xl flex flex-col 
+            h-screen sm:h-auto sm:max-h-[90vh]
+        ">
+            
+            <div class="p-4 sm:p-6 border-b border-slate-700 flex justify-between items-center shrink-0">
+                <h2 class="text-lg sm:text-xl font-bold text-white" id="view-modal-title">Просмотр команды</h2>
+                <button id="view-modal-close" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-4 sm:p-6 overflow-y-auto flex-1 min-h-0 flex flex-col gap-4">
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Название</label>
+                            <p id="view-title" class="text-white text-base font-semibold"></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Вендор</label>
+                            <p id="view-vendor" class="text-slate-300 text-base"></p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Команда / Шаблон</label>
+                        <div class="relative bg-slate-950 border border-slate-700 rounded-lg p-4">
+                            <button id="view-copy-btn" class="absolute top-2 right-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded text-xs transition-colors flex items-center gap-1.5">
+                                <i class="fa-regular fa-copy"></i>
+                                <span>Копировать</span>
+                            </button>
+                            <pre id="view-template" class="font-mono text-green-400 text-sm whitespace-pre-wrap break-all pr-20"></pre>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Описание / Примечания</label>
+                        <p id="view-description" class="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap"></p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Теги</label>
+                        <div id="view-tags" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-6 border-t border-slate-700 flex justify-end gap-3 bg-slate-800/50 sm:rounded-b-xl shrink-0">
+                <button id="view-modal-edit" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium shadow-lg shadow-blue-600/20 transition-all transform active:scale-95">
+                    <i class="fa-solid fa-pen mr-2"></i>Редактировать
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
@@ -263,6 +327,7 @@
     <script src="js/storage.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/modal.js"></script>
+    <script src="js/view-modal.js"></script>
     <script src="js/autobackup.js"></script>
     <script src="js/history.js"></script>
     <script src="js/logger.js"></script>
